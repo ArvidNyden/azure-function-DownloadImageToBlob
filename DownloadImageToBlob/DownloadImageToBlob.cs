@@ -16,7 +16,7 @@ namespace DownloadImageToBlob
     public static class DownloadImageToBlob
     {
         [FunctionName("DownloadImageToBlob")]
-        public static async void Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async void Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             log.Info($"Function triggered");
 
