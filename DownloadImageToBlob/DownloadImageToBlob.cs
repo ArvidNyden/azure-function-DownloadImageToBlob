@@ -21,12 +21,16 @@ namespace DownloadImageToBlob
             log.Info($"Function triggered");
 
             string body = new StreamReader(req.Body).ReadToEnd();
+
+            log.Info($"Request Body: {body}");
+
             var bodyContent = JsonConvert.DeserializeObject<RequestBodyContent>(body);
+
+            if (bodyContent == null)
+                throw new Exception("Unable to parse body.");
 
             string imageUri = bodyContent.ImageUrl;
             string referenceLink = bodyContent.Link;
-
-            log.Info($"Request Body: {imageUri}");
 
             try
             {
@@ -38,8 +42,6 @@ namespace DownloadImageToBlob
                 log.Info($"Using key vault {keyVaultUri}");
 
                 var connectionString = await kvClient.GetSecretAsync(keyVaultUri, "StorageConnectionString");
-
-                log.Info($"Using connection string {connectionString.Value}");
 
                 if (!CloudStorageAccount.TryParse(connectionString.Value, out var storagAccount))
                     throw new Exception($"Unable to parse connection string {connectionString}");
@@ -61,6 +63,7 @@ namespace DownloadImageToBlob
                 {
                     await blobReferences.UploadFromStreamAsync(contentStream);
                 }
+                log.Info($"Function finished. {blobReferences.Uri}");
             }
             catch (Exception ex)
             {
