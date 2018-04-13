@@ -9,6 +9,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace DownloadImageToBlob
 {
@@ -19,7 +20,11 @@ namespace DownloadImageToBlob
         {
             log.Info($"Function triggered");
 
-            string imageUri = new StreamReader(req.Body).ReadToEnd();
+            string body = new StreamReader(req.Body).ReadToEnd();
+            var bodyContent = JsonConvert.DeserializeObject<RequestBodyContent>(body);
+
+            string imageUri = bodyContent.ImageUrl;
+            string referenceLink = bodyContent.Link;
 
             log.Info($"Request Body: {imageUri}");
 
@@ -48,6 +53,7 @@ namespace DownloadImageToBlob
                 log.Info($"Using image name {imageName}");
 
                 var blobReferences = blobContainer.GetBlockBlobReference(imageName);
+                blobReferences.Metadata.Add("Reference", referenceLink);
                 blobReferences.Metadata.Add("Source", imageUri);
 
                 using (var httpClient = new HttpClient())
