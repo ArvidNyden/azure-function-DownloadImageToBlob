@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DownloadImageToBlob": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "KeyVault": "https://arvidnyden-web.vault.azure.net/"
+      }
+    }
+  }
+}
