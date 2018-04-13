@@ -12,4 +12,4 @@ $body = @{
         }
 
 $bodyJson = $body | ConvertTo-Json
-Invoke-WebRequest -Uri $uriDev -Method Post -Body $bodyJson
+Invoke-WebRequest -Uri $uri -Method Post -Body $bodyJson
