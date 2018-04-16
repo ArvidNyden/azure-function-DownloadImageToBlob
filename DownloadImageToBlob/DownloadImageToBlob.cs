@@ -61,6 +61,7 @@ namespace DownloadImageToBlob
                 blobReferences.Metadata.Add("Reference", referenceLink);
                 blobReferences.Metadata.Add("Source", imageUri);
                 blobReferences.Metadata.Add("Extension", imageExtension);
+                blobReferences.Properties.ContentType = $"image/{imageExtension.Replace(".", string.Empty)}";
 
                 using (var httpClient = new HttpClient())
                 using (var contentStream = await httpClient.GetStreamAsync(imageUri))
