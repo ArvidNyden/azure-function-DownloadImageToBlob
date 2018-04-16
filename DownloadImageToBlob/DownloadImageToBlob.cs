@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
@@ -50,13 +51,16 @@ namespace DownloadImageToBlob
                 var blobContainer = blobClient.GetContainerReference("rssimages");
                 await blobContainer.CreateIfNotExistsAsync();
 
-                var imageName = imageUri.Substring(imageUri.LastIndexOf("/") + 1, imageUri.IndexOf("?") - imageUri.LastIndexOf("/") - 1);
+                var rawImageName = new Uri(imageUri).Segments.Last();
+                var imageExtension = rawImageName.Remove(0, rawImageName.IndexOf(".", StringComparison.Ordinal));
+                var imageName = new Uri(referenceLink).Segments.Last();
 
                 log.Info($"Using image name {imageName}");
 
                 var blobReferences = blobContainer.GetBlockBlobReference(imageName);
                 blobReferences.Metadata.Add("Reference", referenceLink);
                 blobReferences.Metadata.Add("Source", imageUri);
+                blobReferences.Metadata.Add("Extension", imageExtension);
 
                 using (var httpClient = new HttpClient())
                 using (var contentStream = await httpClient.GetStreamAsync(imageUri))
